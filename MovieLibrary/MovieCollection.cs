@@ -63,9 +63,9 @@ public class MovieCollection : IMovieCollection
         // Number = old Number
 
         // Get total number of dvd's in the collection
-        int num_Dvds = NoDVDs();
+        int num_movies = Number;
 
-        if (num_Dvds == 0) { return true; }
+        if (Number == 0) { return true; }
 
         return false;
     }
@@ -259,7 +259,7 @@ public class MovieCollection : IMovieCollection
         int leftSum = DvdCount(node.LChild);
         int rightSum = DvdCount(node.RChild);
 
-        return leftSum + node.Movie.AvailableCopies + rightSum;
+        return leftSum + node.Movie.TotalCopies + rightSum;
     }
 
 
