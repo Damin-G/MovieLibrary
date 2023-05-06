@@ -38,6 +38,8 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
             collection.Insert(movie1);
             collection.Insert(movie3);
 
+            Console.WriteLine(collection.ToArray());
+
             var array = collection.ToArray();
             foreach (var item in array)
             {
@@ -46,6 +48,7 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
 
             Console.WriteLine(collection.Number);
             Console.WriteLine(collection.NoDVDs());
+            Console.WriteLine(collection.Delete(movie2));
             Console.WriteLine(collection.Delete(movie2));
 
             array = collection.ToArray();
@@ -57,6 +60,24 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
             Console.WriteLine(collection.Number);
 
             Console.WriteLine(collection.NoDVDs());
+
+            Console.WriteLine(collection.Search(movie5.Title) + "lol");
+
+            //collection.Insert(movie1);
+
+            //var array = collection.ToArray();
+            //foreach (var item in array)
+            //{
+            //    Console.Write(item.Title.ToString() + ", ");
+            //}
+
+            //collection.Delete(movie1);
+
+            //array = collection.ToArray();
+            //foreach (var item in array)
+            //{
+            //    Console.Write(item.Title.ToString() + ", ");
+            //}
         }
     }
 }

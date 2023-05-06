@@ -249,6 +249,8 @@ public class MovieCollection : IMovieCollection
 
     private int DvdCount(BTreeNode? node)
     {
+        // Use in-order Traversal to visit all nodes in the BTree, and recursively sum
+        // the number of DVDs in the movie collection.
         if (node == null)
         {
             return 0;
