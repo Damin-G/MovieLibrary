@@ -92,7 +92,7 @@ public class MovieCollection : IMovieCollection
 
     private bool InsertHelper(BTreeNode currentNode, IMovie movie)
     {
-        int comparison = string.Compare(movie.Title, currentNode.Movie.Title);
+        int comparison = movie.CompareTo(currentNode.Movie);
 
         // If the new movie title is smaller, go left
         if (comparison < 0)
@@ -131,12 +131,11 @@ public class MovieCollection : IMovieCollection
     {
         // Call the recursive helper function to delete the movie by its title
         int initialCount = count;
-        BTreeNode 
-        DeleteHelper(root, movie.Title);
+        root = DeleteHelper(root, movie);
         return count < initialCount;
     }
 
-    private BTreeNode? DeleteHelper(BTreeNode? currentNode, string movietitle)
+    private BTreeNode? DeleteHelper(BTreeNode? currentNode, IMovie movie)
     {
         // Base case: if the current node is null, the movie is not in the collection
         if (currentNode == null)
@@ -145,17 +144,17 @@ public class MovieCollection : IMovieCollection
         }
 
         // Compare the movie title with the current node's movie title
-        int comparison = string.Compare(movietitle, currentNode.Movie.Title);
+        int comparison = movie.CompareTo(currentNode.Movie);
 
         // If the movie title is smaller, search in the left subtree
         if (comparison < 0)
         {
-            currentNode.LChild = DeleteHelper(currentNode.LChild, movietitle);
+            currentNode.LChild = DeleteHelper(currentNode.LChild, movie);
         }
         // If the movie title is larger, search in the right subtree
         else if (comparison > 0)
         {
-            currentNode.RChild = DeleteHelper(currentNode.RChild, movietitle);
+            currentNode.RChild = DeleteHelper(currentNode.RChild, movie);
         }
         // If the movie titles are equal, the movie is found and needs to be deleted
         else
@@ -184,7 +183,7 @@ public class MovieCollection : IMovieCollection
             currentNode.Movie = MinValue(currentNode.RChild);
 
             // Delete the inorder successor
-            currentNode.RChild = DeleteHelper(currentNode.RChild, currentNode.Movie.Title);
+            currentNode.RChild = DeleteHelper(currentNode.RChild, currentNode.Movie);
         }
         return currentNode;
     }
@@ -203,11 +202,14 @@ public class MovieCollection : IMovieCollection
 
     public IMovie? Search(string movietitle)
     {
+        // Create a movie with the same title being searched for
+        Movie movie = new Movie(movietitle);
+
         // Call the recursive helper function to search for the movie by its title
-        return SearchHelper(root, movietitle);
+        return SearchHelper(root, movie);
     }
 
-    private IMovie? SearchHelper(BTreeNode? currentNode, string movietitle)
+    private IMovie? SearchHelper(BTreeNode? currentNode, IMovie movie)
     {
         // Base case: if the current node is null, the movie is not in the collection
         if (currentNode == null)
@@ -216,17 +218,17 @@ public class MovieCollection : IMovieCollection
         }
 
         // Compare the movie title with the current node's movie title
-        int comparison = string.Compare(movietitle, currentNode.Movie.Title);
+        int comparison = movie.CompareTo(currentNode.Movie);
 
         // If the movie title is smaller, search in the left subtree
         if (comparison < 0)
         {
-            return SearchHelper(currentNode.LChild, movietitle);
+            return SearchHelper(currentNode.LChild, movie);
         }
         // If the movie title is larger, search in the right subtree
         else if (comparison > 0)
         {
-            return SearchHelper(currentNode.RChild, movietitle);
+            return SearchHelper(currentNode.RChild, movie);
         }
         // If the movie titles are equal, the movie is found
         else
@@ -242,19 +244,40 @@ public class MovieCollection : IMovieCollection
         // Pre-condition: nil
         // Post-condition: return the total number of DVDs in this movie collection.
         // this moive collection remains unchanged, and new Number = old Number.
-        return 0;
+        return DvdCount(root);
     }
+
+    private int DvdCount(BTreeNode? node)
+    {
+        if (node == null)
+        {
+            return 0;
+        }
+
+        int leftSum = DvdCount(node.LChild);
+        int rightSum = DvdCount(node.RChild);
+
+        return leftSum + node.Movie.AvailableCopies + rightSum;
+    }
+
 
     public IMovie[] ToArray()
     {
-        // Return an array that contains all the movies in this movie collection and
-        // the movies in the array are sorted in the dictionary order by movie title
-        // Pre-condition: nil
-        // Post-condition: return an array of movies that are stored in dictionary
-        // order by their titles, this movie collection remains unchanged and
-        // new Number = old Number.
-        return new IMovie[0];
+        List<IMovie> movies = new List<IMovie>();
+        InOrderTraversal(root, movies);
+        return movies.ToArray();
+    }
 
+
+
+    private void InOrderTraversal(BTreeNode? node, List<IMovie> movies)
+    {
+        if (node != null)
+        {
+            InOrderTraversal(node.LChild, movies);
+            movies.Add(node.Movie);
+            InOrderTraversal(node.RChild, movies);
+        }
     }
 
     public void Clear()
@@ -264,5 +287,7 @@ public class MovieCollection : IMovieCollection
         // Post-condition: all the movies in this movie collection have been removed
         // from this movie collection and new Number = 0. 
 
+        root = null;
+        count = 0;
     }
 }
