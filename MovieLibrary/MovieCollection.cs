@@ -6,11 +6,11 @@
 using System;
 
 //A class that models a node of a binary search tree
-//An instance of this class is a node in the binary search tree 
+//An instance of this class is a node in the binary search tree
 public class BTreeNode
 {
 	private IMovie movie; // movie
-	private BTreeNode? lchild; // reference to its left child 
+	private BTreeNode? lchild; // reference to its left child
 	private BTreeNode? rchild; // reference to its right child
 
 	public BTreeNode(IMovie movie)
@@ -58,17 +58,24 @@ public class MovieCollection : IMovieCollection
 
 	public bool IsEmpty()
 	{
-
-		//To be completed by students
-		return true;
+        // Check if this movie collection is empty
+        // Pre-condition: nil
+        // Post-condition: return true if this movie collection is empty; otherwise,
+		// return false. This movie collection remains unchanged and new
+		// Number = old Number
+        return true;
 	}
 
 
 	public bool Insert(IMovie movie)
 	{
-
-		//To be completed by students
-		return true;
+        // Insert a movie into this movie collection
+        // Pre-condition: nil
+        // Post-condition: if the movie was not in this movie collection,
+		// the movie has been added into this movie collection,
+		// new Number = old Number + 1 and return true; otherwise,
+		// new Number = old Number and return false.
+        return true;
     }
 
 
@@ -76,7 +83,13 @@ public class MovieCollection : IMovieCollection
 
 	public bool Delete(IMovie movie)
 	{
-        //To be completed by students
+        // Delete a movie from this movie collection
+        // Pre-condition: nil
+        // Post-condition: if the movie was in this movie collection,
+		// the movie has been removed out of this movie collection,
+		// new Number - old Number - 1 and return true; otherwise,
+		// return false and this movie collection remains unchanged and
+		// new Number = old Number.
         return true;
     }
 
@@ -84,23 +97,34 @@ public class MovieCollection : IMovieCollection
 
 	public IMovie? Search(string movietitle)
 	{
-		//To be completed by students
-		return null;
+        // Search for a movie by its title in this movie collection  
+        // pre: nil
+        // post: return the reference of the movie object if the
+		//		 movie is in this movie collection;
+        //	     otherwise, return null. New Number = old Number.
+        return null;
     }
 
 
 
     public int NoDVDs()
 	{
-		//To be completed by students
-		return 0;
+        // Calculate the totall number of DVDs in this movie collection 
+        // Pre-condition: nil
+        // Post-condition: return the total number of DVDs in this movie collection.
+		// this moive collection remains unchanged, and new Number = old Number.
+        return 0;
     }
 
    
     public IMovie[] ToArray()
 	{
-
-        //To be completed by students
+        // Return an array that contains all the movies in this movie collection and
+		// the movies in the array are sorted in the dictionary order by movie title
+        // Pre-condition: nil
+        // Post-condition: return an array of movies that are stored in dictionary
+		// order by their titles, this movie collection remains unchanged and
+		// new Number = old Number.
         return new IMovie[0];
 
     }
@@ -108,8 +132,10 @@ public class MovieCollection : IMovieCollection
 
 	public void Clear()
 	{
-
-        //To be completed by students
+        // Clear this movie collection
+        // Pre-condotion: nil
+        // Post-condition: all the movies in this movie collection have been removed
+		// from this movie collection and new Number = 0. 
 
     }
 }

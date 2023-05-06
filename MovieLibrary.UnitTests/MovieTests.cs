@@ -46,5 +46,16 @@ namespace MovieLibrary.UnitTests
             string expectedOutput = "Title: ABC Genre: Comedy Classification: PG Duration: 90 Copies: 5";
             Assert.AreEqual(expectedOutput, stringOfProperties);
         }
+
+        [TestMethod]
+        public void ToString_titleOnly_returnsStringOfProperties()
+        {
+            Movie thisMovie = new Movie("ABC");
+
+            string stringOfProperties = thisMovie.ToString();
+
+            string expectedOutput = "Title: ABC Genre: 0 Classification: 0 Duration: 0 Copies: 0";
+            Assert.AreEqual(expectedOutput, stringOfProperties);
+        }
     }
 }
