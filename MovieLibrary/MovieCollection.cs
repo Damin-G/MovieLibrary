@@ -265,20 +265,21 @@ public class MovieCollection : IMovieCollection
 
     public IMovie[] ToArray()
     {
-        List<IMovie> movies = new List<IMovie>();
-        InOrderTraversal(root, movies);
-        return movies.ToArray();
+        int arraySize = Number;
+        IMovie[] movies = new IMovie[arraySize];
+        int index = 0;
+        InOrderTraversal(root, movies, ref index);
+        return movies;
     }
 
-
-
-    private void InOrderTraversal(BTreeNode? node, List<IMovie> movies)
+    private void InOrderTraversal(BTreeNode? node, IMovie[] movies, ref int index)
     {
         if (node != null)
         {
-            InOrderTraversal(node.LChild, movies);
-            movies.Add(node.Movie);
-            InOrderTraversal(node.RChild, movies);
+            InOrderTraversal(node.LChild, movies, ref index);
+            movies[index] = node.Movie;
+            index++;
+            InOrderTraversal(node.RChild, movies, ref index);
         }
     }
 

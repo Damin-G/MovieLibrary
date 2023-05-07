@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Text;
 
 namespace MovieLibrary // Note: actual namespace depends on the project name.
 {
@@ -8,27 +10,51 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
         static void Main(string[] args)
         {
             int numberOfTrials = 100;
-            int nMovies = 100000;
+            int nMovies = 8000;
             double[] executionTimes = new double[numberOfTrials];
+            int titleLength = 5;
 
             for (int trial = 0; trial < numberOfTrials; trial++)
             {
                 MovieCollection collection = new MovieCollection();
+                char[] titleChars = new string('A', titleLength).ToCharArray();
+                PrintPercentage(trial + 1, numberOfTrials);
 
-                int titleLength = 4;
-                HashSet<string> usedTitles = new HashSet<string>();
-                Random random = new Random();
+                // Use a ConcurrentBag to ensure thread-safety
+                ConcurrentBag<Movie> movies = new ConcurrentBag<Movie>();
 
-                for (int i = 1; i <= nMovies; i++)
+                // Parallelize the movie creation and insertion
+                Parallel.For(1, nMovies + 1, i =>
                 {
-                    string title;
-                    do
-                    {
-                        title = GenerateRandomTitle(titleLength, random);
-                    } while (usedTitles.Contains(title));
-                    usedTitles.Add(title);
+                    string title = new string(titleChars);
 
                     Movie movie = new Movie(title, MovieGenre.Drama, MovieClassification.PG, 90, 10);
+                    movies.Add(movie);
+
+                    // Increment the last character in the title
+                    titleChars[titleLength - 1]++;
+
+                    // Check for character overflow and reset to 'A' if necessary
+                    for (int j = titleLength - 1; j >= 0; j--)
+                    {
+                        if (titleChars[j] > 'Z')
+                        {
+                            titleChars[j] = 'A';
+                            if (j - 1 >= 0)
+                            {
+                                titleChars[j - 1]++;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                });
+
+                // Add movies to the collection
+                foreach (var movie in movies)
+                {
                     collection.Insert(movie);
                 }
 
@@ -46,21 +72,6 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
             Console.WriteLine($"Average execution time: {averageExecutionTime} ms");
         }
 
-        private static string GenerateRandomTitle(int length, Random random)
-        {
-            char[] titleChars = new char[length];
-            for (int i = 0; i < length; i++)
-            {
-                char c = (char)random.Next('A', 'Z' + 1);
-                if (random.NextDouble() < 0.5)
-                {
-                    c = char.ToLower(c);
-                }
-                titleChars[i] = c;
-            }
-            return new string(titleChars);
-        }
-
         private static double CalculateAverage(double[] values)
         {
             double sum = 0;
@@ -69,6 +80,19 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
                 sum += values[i];
             }
             return sum / values.Length;
+        }
+
+        public static void PrintPercentage(int progress, int total)
+        {
+            double percent = (double)progress / total * 100;
+
+            Console.Write($"\rProgress: {percent:0.00}%");
+
+            // If the progress is complete, print a newline
+            if (progress == total)
+            {
+                Console.WriteLine();
+            }
         }
     }
 }
