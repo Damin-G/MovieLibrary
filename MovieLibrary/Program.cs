@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace MovieLibrary // Note: actual namespace depends on the project name.
 {
@@ -6,78 +7,68 @@ namespace MovieLibrary // Note: actual namespace depends on the project name.
     {
         static void Main(string[] args)
         {
-            Movie movie1 = new Movie("A");
-            Movie movie2 = new Movie("B");
-            Movie movie3 = new Movie("C", MovieGenre.Drama, MovieClassification.PG, 90, 10);
-            Movie movie4 = new Movie("D", MovieGenre.Drama, MovieClassification.PG, 90, 10);
-            Movie movie5 = new Movie("E", MovieGenre.Drama, MovieClassification.PG, 90, 10);
-            Movie movie26 = new Movie("Z", MovieGenre.Drama, MovieClassification.PG, 90, 10);
+            int numberOfTrials = 100;
+            int nMovies = 100000;
+            double[] executionTimes = new double[numberOfTrials];
 
-            MovieCollection collection = new MovieCollection();
-            //collection.Insert(movie3);
-            //collection.Insert(movie4);
-            //collection.Insert(movie5);
-            //collection.Insert(movie2);
-            //collection.Insert(movie1);
-
-            //Console.WriteLine(collection.Number);
-            //Console.WriteLine(collection.Delete(movie3));
-            //Console.WriteLine(collection.Number);
-            //Console.WriteLine(collection.Search(movie4.Title).Title);
-            //int length = collection.ToArray().ToString;
-            //Console.WriteLine(collection.ToArray()[0].Title);
-            //Console.WriteLine(collection.ToArray()[1].Title);
-            //Console.WriteLine(collection.ToArray()[2].Title);
-            //Console.WriteLine(collection.ToArray()[3].Title);
-            //Console.WriteLine(collection.ToArray()[4].Title);
-
-            // Create case for deletion with double child node
-            collection.Insert(movie4);
-            collection.Insert(movie2);
-            collection.Insert(movie26);
-            collection.Insert(movie1);
-            collection.Insert(movie3);
-
-            Console.WriteLine(collection.ToArray());
-
-            var array = collection.ToArray();
-            foreach (var item in array)
+            for (int trial = 0; trial < numberOfTrials; trial++)
             {
-                Console.Write(item.Title.ToString() + ", ");
+                MovieCollection collection = new MovieCollection();
+
+                int titleLength = 4;
+                HashSet<string> usedTitles = new HashSet<string>();
+                Random random = new Random();
+
+                for (int i = 1; i <= nMovies; i++)
+                {
+                    string title;
+                    do
+                    {
+                        title = GenerateRandomTitle(titleLength, random);
+                    } while (usedTitles.Contains(title));
+                    usedTitles.Add(title);
+
+                    Movie movie = new Movie(title, MovieGenre.Drama, MovieClassification.PG, 90, 10);
+                    collection.Insert(movie);
+                }
+
+                Stopwatch stopwatch = new Stopwatch();
+
+                stopwatch.Start();
+                collection.NoDVDs();
+                stopwatch.Stop();
+
+                TimeSpan elapsedTime = stopwatch.Elapsed;
+                executionTimes[trial] = elapsedTime.TotalMilliseconds;
             }
 
-            Console.WriteLine(collection.Number);
-            Console.WriteLine(collection.NoDVDs());
-            Console.WriteLine(collection.Delete(movie2));
-            Console.WriteLine(collection.Delete(movie2));
+            double averageExecutionTime = CalculateAverage(executionTimes);
+            Console.WriteLine($"Average execution time: {averageExecutionTime} ms");
+        }
 
-            array = collection.ToArray();
-            foreach (var item in array)
+        private static string GenerateRandomTitle(int length, Random random)
+        {
+            char[] titleChars = new char[length];
+            for (int i = 0; i < length; i++)
             {
-                Console.Write(item.Title.ToString() + ", ");
+                char c = (char)random.Next('A', 'Z' + 1);
+                if (random.NextDouble() < 0.5)
+                {
+                    c = char.ToLower(c);
+                }
+                titleChars[i] = c;
             }
+            return new string(titleChars);
+        }
 
-            Console.WriteLine(collection.Number);
-
-            Console.WriteLine(collection.NoDVDs());
-
-            Console.WriteLine(collection.Search(movie5.Title) + "lol");
-
-            //collection.Insert(movie1);
-
-            //var array = collection.ToArray();
-            //foreach (var item in array)
-            //{
-            //    Console.Write(item.Title.ToString() + ", ");
-            //}
-
-            //collection.Delete(movie1);
-
-            //array = collection.ToArray();
-            //foreach (var item in array)
-            //{
-            //    Console.Write(item.Title.ToString() + ", ");
-            //}
+        private static double CalculateAverage(double[] values)
+        {
+            double sum = 0;
+            for (int i = 0; i < values.Length; i++)
+            {
+                sum += values[i];
+            }
+            return sum / values.Length;
         }
     }
 }
